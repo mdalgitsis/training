@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  hello-nbc-chart:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-12-05T15:59:09.815727857+01:00"
+    description: A Helm chart for Kubernetes
+    digest: 7a56234b32b7c9867eb2ac5a5c78cab20ff8278c9b6881c352e37f5e2d49babe
+    name: hello-nbc-chart
+    type: application
+    urls:
+    - hello-nbc-chart-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-12-05T15:59:09.81521311+01:00"
