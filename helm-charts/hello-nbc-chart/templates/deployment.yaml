@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hola-nbc-chart
+  namespace: training
+  labels:
+    app: hola-nbc-chart
+spec:
+  selector:
+    matchLabels:
+      app: hola-nbc-chart
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: hola-nbc-chart
+    spec:
+      containers:
+      - name: hola-nbc-chart
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 8000
