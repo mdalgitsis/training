@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+
+  hola_nbc:
+    build:
+      context: ./python_flask_server_exercise
+      dockerfile: Dockerfile
+    image: hola_nearby:1.0.0
+    container_name: hola_nearby
+    restart: always
+    ports:
+      - "8000:8000"
+
+
