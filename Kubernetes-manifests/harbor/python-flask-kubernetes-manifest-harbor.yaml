@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hola-nbc
+  namespace: training
+  labels:
+    app: hola-nbc
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    app: hola-nbc
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hola-nbc
+  namespace: training
+  labels:
+    app: hola-nbc
+spec:
+  selector:
+    matchLabels:
+      app: hola-nbc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hola-nbc
+    spec:
+      containers:
+      - name: hola-nbc
+        image: registry.nearbycomputing.com/michalis/python-web-server:v.0.0.1
+        ports:
+        - containerPort: 8000
+      imagePullSecrets:
+        - name: harbor-credentials
