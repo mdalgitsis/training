@@ -1,0 +1,109 @@
+Installing Ansible on Ubuntu
+
+Ubuntu builds are available in a PPA here.
+
+To configure the PPA on your system and install Ansible run these commands:
+
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo add-apt-repository --yes --update ppa:ansible/ansible
+$ sudo apt install ansible
+
+or
+
+# install
+python3 -m pip install --user ansible
+
+# upgrade
+python3 -m pip install --upgrade --user ansible
+
+# confirm
+ansible --version
+
+# The version displayed by this command is for the associated ansible-core package that has been installed.
+# To check the version of the ansible package that has been installed:
+python3 -m pip show ansible
+
+# simple ad-hoc command
+# One of the simplest Ansible modules is the ping module. This module tests connectivity between the Ansible controller and a host. If you don’t have any remote hosts available, provide the name of the Ansible controller itself (localhost) to run the ping module against.
+ansible localhost -m ping
+#If successful, you should see green output indicating success!
+
+# create an inventory file (inventory files have extention INI or YAML)
+cd TRAINING/training/ansible
+touch inventory.yaml
+vim inventory.yaml
+# add the following
+virtualmachines:
+  hosts:
+    fog_user:
+      ansible_host: 10.113.0.52
+      ansible_user: fog_user
+      ansible_ssh_pass: fogpoc
+# save and exit
+# Verify your inventory. If you created your inventory in a directory other than your home directory, specify the full path with the -i option.
+ansible-inventory -i inventory.yaml --list
+
+# Install sshpass
+sudo apt install sshpass
+
+# Ping the managed nodes in your inventory. In this example, the group name is virtualmachines which you can specify with the ansible command instead of all.
+ansible virtualmachines -m ping -i inventory.yaml
+or
+ansible all -m ping
+
+# Creating a playbook (Playbooks are automation blueprints, in YAML format, that Ansible uses to deploy and configure managed nodes)
+- Playbook: A list of plays that define the order in which Ansible performs operations, from top to bottom, to achieve an overall goal.
+- Play: An ordered list of tasks that maps to managed nodes in an inventory.
+- Task: A list of one or more modules that defines the operations that Ansible performs.
+- Module: A unit of code or binary that Ansible runs on managed nodes. Ansible modules are grouped in collections with a Fully Qualified Collection Name (FQCN) for each module.
+
+# In the previous section, you used the ansible command to ping hosts in your inventory. Now let’s create a playbook that pings your hosts and also prints a “Hello NearbyComputing” message.
+touch playbook.yaml
+vim playbook.yaml
+# Add the following:
+- name: My first play
+  hosts: virtualmachines
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+   - name: Print message
+     ansible.builtin.debug:
+       msg: Hello NearbyComputing
+# Save & exit
+# Run your playbook
+ansible-playbook -i inventory.yaml playbook.yaml
+
+
+# Check the list of the installed collections
+ansible-galaxy collection list
+...
+kubernetes.core               2.3.2
+...
+
+# If kubernetes.core collection is not installed use
+ansible-galaxy collection install kubernetes.core
+# To use it in a playbook, specify the appropriate module, e.g. kubernetes.core.k8s to manage K8s objects or kubernetes.core.k8s_info to describe k8s objects
+
+# Install kubernetes python library (Is it neseccary?)
+pip install kubernetes
+
+# Install jmespath for json queries 
+pip3 install jmespath
+
+# Add another task into the current play
+- name: list of all pods from all namespaces
+     kubernetes.core.k8s_info:
+       kind: Pod
+     register: pod_list
+- name: Print ALL pod names
+  debug:
+    msg: "pod_list: {{ pod_list | json_query('resources[*].metadata.name')  }} "
+- name: Get the pods in the training namespace
+     kubernetes.core.k8s_info:
+       kind: Pod
+       namespace: training
+     register: pod_list_training_ns
+- name: Print pod names of training namespace
+  debug:
+    msg: "pod_list_training_ns: {{ pod_list_training_ns | json_query('resources[*].metadata.name')  }} "
