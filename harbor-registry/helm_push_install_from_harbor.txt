@@ -1,0 +1,9 @@
+# Push a helm into the harbor repo [Chart museum plug-in is needed]
+helm cm-push chart_name repo_name   -> creates the helm package and it pushes it into the repo
+e.g:
+helm cm-push python-web-server-chart harbor
+
+# Install a chart from the harbor repo
+helm install release_name  --version 0.1.0 repo_name/chart_name
+e.g.:
+helm install hello-nbc --version 0.1.0 harbor/hello-nbc-chart-harbor
