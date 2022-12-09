@@ -1,0 +1,6 @@
+virtualmachines:
+  hosts:
+    fog_user:
+      ansible_host: 10.113.0.52
+      ansible_user: fog_user
+      ansible_ssh_pass: fogpoc  

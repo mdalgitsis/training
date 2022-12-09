@@ -1,0 +1,30 @@
+- name: My first play
+  hosts: virtualmachines
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+   - name: Print message
+     ansible.builtin.debug:
+       msg: Hello NearbyComputing
+   - name: list of all pods from all namespaces
+     kubernetes.core.k8s_info:
+       kind: Pod
+     register: pod_list
+   - name: Print ALL pod names
+     debug:
+       msg: "pod_list: {{ pod_list | json_query('resources[*].metadata.name')  }} "
+   - name: Get the pods in the training namespace
+     kubernetes.core.k8s_info:
+       kind: Pod
+       namespace: training
+     register: pod_list_training_ns
+   - name: Print pod names of training namespace
+     debug:
+       msg: "pod_list_training_ns: {{ pod_list_training_ns | json_query('resources[*].metadata.name')  }} "
+   - name: Deploy a helm-chart from the harbor helm-repo
+     kubernetes.core.helm:
+       name: hello-nbc
+       chart_ref: harbor/hello-nbc-chart-harbor
+       chart_version: 0.1.0
+       release_namespace: training
+
