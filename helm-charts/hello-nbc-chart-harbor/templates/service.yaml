@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hola-nbc-chart-harbor
+  namespace: training
+  labels:
+    app: hola-nbc-chart-harbor
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    app: hola-nbc-chart-harbor
+  type: {{ .Values.service.type }}

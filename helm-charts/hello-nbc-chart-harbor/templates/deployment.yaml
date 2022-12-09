@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hola-nbc-chart-harbor
+  namespace: training
+  labels:
+    app: hola-nbc-chart-harbor
+spec:
+  selector:
+    matchLabels:
+      app: hola-nbc-chart-harbor
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: hola-nbc-chart-harbor
+    spec:
+      containers:
+      - name: hola-nbc-chart-harbor
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 8000
+      imagePullSecrets:
+        - name: harbor-credentials
