@@ -18,6 +18,6 @@ data:
         advertise: bsf-svc
 
     nrf:
-     sbi:
-    - name: nrf-svc
-      port: 7777
+      sbi:
+      - name: nrf-svc
+        port: 7777
