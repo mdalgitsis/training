@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nrf-cmap
+  labels:
+    epc-mode: nrf
+data:
+  nrf.yaml: |
+    logger:
+        file: /open5gs/nrf.log
+
+    nrf:
+        sbi:
+        - dev: {{ .Values.k8s.interface }}
+          port: 7777
