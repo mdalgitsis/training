@@ -41,7 +41,7 @@ spec:
           ports:
             - name: sbi  
               containerPort: 7777
-          olumeMounts:
+          volumeMounts:
             - name: nrf-cmap
               mountPath: /open5gs/config-map/nrf.yaml
               subPath: "nrf.yaml"
