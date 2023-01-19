@@ -30,7 +30,7 @@ spec:
       protocol: SCTP
       port: 38412  # Service port
       targetPort: ngap # Pod port
-      nodePort: "" # Node port
+      #nodePort: "" 
 
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
