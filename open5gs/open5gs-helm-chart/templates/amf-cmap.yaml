@@ -13,7 +13,7 @@ data:
     amf:
         sbi:
         - dev: {{ .Values.k8s.interface }}
-          port: 777
+          port: 7777
           advertise: amf-sbi-svc
         ngap:
         - dev: {{ .Values.k8s.interface }}
