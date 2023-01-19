@@ -16,7 +16,7 @@ data:
         sbi:     
         - dev: "{{ .Values.db_uri }}" 
           port: 7777
-          advertise: smf-svc
+          advertise: smf-sbi-svc
         pfcp:
            dev: {{ .Values.k8s.interface }}
            port: 8805
