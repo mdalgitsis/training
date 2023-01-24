@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf-pfcp-svc
+  labels:
+    nf-type: upf
+spec:
+  selector:
+    nf-type: upf
+  ports:
+    - name: pfcp
+      protocol: UDP
+      port: 8805
+      targetPort: pfcp
+  type: ClusterIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf-gtpu-svc
+  labels:
+    nf-type: upf
+spec:
+  selector:
+    nf-type: upf
+  ports:
+    - name: gtpu
+      protocol: UDP
+      port: 2152
+      targetPort: gtpu
+      #nodePort: ""
+  type: NodePort
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata: # metadata on the deployment
+  name: upf-depl
+  labels:
+    nf-type: upf
+spec: # desired state of deployment
+  replicas: 1
+  selector:
+    matchLabels:
+      nf-type: upf
+  template: 
+    metadata: # metadata on the pod
+      annotations:
+        linkerd.io/inject: disabled
+      labels:
+        nf-type: upf
+    spec: # desired state of pod
+      containers:
+        - name: upf
+          image: "{{ .Values.open5gs.image.repository }}:{{ .Values.open5gs.image.tag }}"
+          imagePullPolicy: {{ .Values.open5gs.image.pullPolicy }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN"]
+          command: ["/bin/sh", "-c"]
+          args:
+          - ip tuntap add name ogstun mode tun;
+            ip link set ogstun up;
+            echo "Setting IP 10.45.0.1 to device ogstun";
+            ip addr add 10.45.0.1/16 dev ogstun;
+            sysctl -w net.ipv4.ip_forward=1;
+            sysctl -w net.ipv6.conf.all.disable_ipv6=1;
+            sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward";       
+            echo "Enable NAT for 10.45.0.1 and device ogstun";
+            iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE;
+            ufw disable;
+            iptables -I FORWARD 1 -j ACCEPT;
+            cd /open5gs;
+            ./install/bin/open5gs-upfd -c /open5gs/config-map/upf.yaml;
+            echo '********* Should not get here --> this means UPF is broken!'
+          ports:
+            - name: pfcp
+              containerPort: 8805
+              protocol: UDP
+            - name: gtpu
+              containerPort: 2152
+              protocol: UDP
+          volumeMounts: #  where to mount volumes into containers in
+          - name: upf-cmap
+            mountPath: /open5gs/config-map/upf.yaml
+            subPath: "upf.yaml"
+          - name: dev-net-tun
+            mountPath: /dev/net/tun
+                       
+      volumes:
+        - name: upf-cmap
+          configMap:
+            name: upf-cmap
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
