@@ -37,9 +37,9 @@ vim inventory.yaml
 virtualmachines:
   hosts:
     fog_user:
-      ansible_host: 10.113.0.52
-      ansible_user: fog_user
-      ansible_ssh_pass: fogpoc
+      ansible_host: xxx.xxx.xxx.xxx
+      ansible_user: user
+      ansible_ssh_pass: password
 # save and exit
 # Verify your inventory. If you created your inventory in a directory other than your home directory, specify the full path with the -i option.
 ansible-inventory -i inventory.yaml --list
